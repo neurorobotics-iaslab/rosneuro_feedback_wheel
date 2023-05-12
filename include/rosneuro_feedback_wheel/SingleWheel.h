@@ -16,7 +16,12 @@
 
 namespace rosneuro {
 
+
+
 class SingleWheel {
+	
+	public:
+		enum class Direction {Left = 0, Right};
 
 	public:
 		SingleWheel(void);
@@ -28,6 +33,8 @@ class SingleWheel {
 		void update(float angle);
 		void reset(void);
 
+		bool set_threshold(float value, Direction dir);
+		void show_thresholds(void);
 
 	protected:
 		void on_keyboard_event(const neurodraw::KeyboardEvent& event);
@@ -52,11 +59,17 @@ class SingleWheel {
 		neurodraw::Arc* 		arc_;
 		neurodraw::Cross* 		cross_;
 		neurodraw::Rectangle* 	mline_;
+		neurodraw::Rectangle* 	lline_;
+		neurodraw::Rectangle* 	rline_;
+		neurodraw::Rectangle* 	minline_;
+		neurodraw::Rectangle* 	maxline_;
 
 		float input_min_;
 		float input_max_;
 		float angle_min_;
 		float angle_max_;
+		std::array<float, 2> thresholds_ = {0.7f, 0.3f};
+		bool is_threshold_enabled_ = true;
 
 		float current_angle_;
 		bool has_new_angle_;

@@ -25,14 +25,24 @@ SingleWheel::~SingleWheel(void) {
 
 bool SingleWheel::configure(void) {
 
+
+	// Getting parameters from nameserver
+	ros::param::param("~input_min", this->input_min_, 0.0f);
+	ros::param::param("~input_max", this->input_max_, 1.0f);
+	ros::param::param("~angle_min", this->angle_min_, 0.0f);
+	ros::param::param("~angle_max", this->angle_max_, 180.0f);
+
+	
+	std::vector<float> th;
+	if(ros::param::get("~thresholds", th) == true) {
+		this->set_threshold(th.at(0), Direction::Left);
+		this->set_threshold(th.at(1), Direction::Right);
+		this->is_threshold_enabled_ = true;
+	}
+	
+
 	this->setup_scene();
-
-	this->input_min_ = 0.0f;
-	this->input_max_ = 1.0f;
-
-	this->angle_min_ = 0.0f;
-	this->angle_max_ = 180.0f;
-
+	
 	this->current_angle_ = 90.0f;
 	this->has_new_angle_ = false;
 
@@ -42,18 +52,40 @@ bool SingleWheel::configure(void) {
 
 void SingleWheel::setup_scene(void) {
 
-	this->cross_ = new neurodraw::Cross(0.3f, 0.05f);
-	this->ring_  = new neurodraw::Ring(0.8f, 0.15f, neurodraw::Palette::grey);
-	this->arc_   = new neurodraw::Arc(0.8f, 0.15f, 2.0 * M_PI / 3.0f, neurodraw::Palette::lightgrey);
-	this->mline_ = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::green);
+	this->cross_   = new neurodraw::Cross(0.3f, 0.05f);
+	this->ring_    = new neurodraw::Ring(0.8f, 0.15f, neurodraw::Palette::grey);
+	this->arc_     = new neurodraw::Arc(0.8f, 0.15f, 2.0 * M_PI / 3.0f, neurodraw::Palette::lightgrey);
+	this->mline_   = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::green);
+	this->rline_   = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::firebrick);
+	this->lline_   = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::royalblue);
+	this->minline_ = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::dimgray);
+	this->maxline_ = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::dimgray);
 
-	this->arc_->rotate(30);
+	this->arc_->rotate(30.0f);
 	this->mline_->move(0.0f, 0.725f);
+	this->rline_->move(0.0f, 0.725f);
+	this->lline_->move(0.0f, 0.725f);
+	this->minline_->move(0.0f, 0.725f);
+	this->maxline_->move(0.0f, 0.725f);
+	this->rline_->rotate(this->input2angle(this->thresholds_.at(1)), 0.0f, 0.0f);
+	this->lline_->rotate(this->input2angle(this->thresholds_.at(0)), 0.0f, 0.0f);
+	this->minline_->rotate(this->angle_min_, 0.0f, 0.0f);
+	this->maxline_->rotate(this->angle_max_, 0.0f, 0.0f);
 
 	this->engine_->add(this->ring_);
 	this->engine_->add(this->cross_);
 	this->engine_->add(this->arc_);
+	this->engine_->add(this->minline_);
+	this->engine_->add(this->maxline_);
 	this->engine_->add(this->mline_);
+	this->engine_->add(this->lline_);
+	this->engine_->add(this->rline_);
+
+
+	if(this->is_threshold_enabled_ == false) {
+		this->rline_->hide();
+		this->lline_->hide();
+	}
 
 }
 
@@ -119,6 +151,31 @@ void SingleWheel::on_keyboard_event(const neurodraw::KeyboardEvent& event) {
 
 bool SingleWheel::on_request_reset(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res) {
 	this->reset();
+	return true;
+}
+
+
+bool SingleWheel::set_threshold(float value, Direction dir) {
+
+
+	if(value > this->input_max_ | value < this->input_min_) {
+		ROS_ERROR("The provided threshold %f is not in the given input range [%f %f]",
+				   value, this->input_min_, this->input_max_);
+		return false;
+	}
+
+
+	switch(dir) {
+		case Direction::Left:
+			this->thresholds_.at(0) = value;
+			ROS_INFO("Threshold for Direction::Left changed to: %f", value);
+			break;
+		case Direction::Right:
+			this->thresholds_.at(1) = value;
+			ROS_INFO("Threshold for Direction::Right changed to: %f", value);
+			break;
+	}
+
 	return true;
 }
 
