@@ -32,9 +32,10 @@ bool SingleWheel::configure(void) {
 	ros::param::param("~angle_min", this->angle_min_, 0.0f);
 	ros::param::param("~angle_max", this->angle_max_, 180.0f);
 
-	
 	std::vector<float> th;
-	if(ros::param::get("~thresholds", th) == true) {
+	this->p_nh_.getParam("thresholds", th);
+
+	if(th.size() == 2) {
 		this->set_threshold(th.at(0), Direction::Left);
 		this->set_threshold(th.at(1), Direction::Right);
 		this->is_threshold_enabled_ = true;

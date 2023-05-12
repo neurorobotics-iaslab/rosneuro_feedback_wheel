@@ -69,7 +69,7 @@ class SingleWheel {
 		float angle_min_;
 		float angle_max_;
 		std::array<float, 2> thresholds_ = {0.7f, 0.3f};
-		bool is_threshold_enabled_ = true;
+		bool is_threshold_enabled_ = false;
 
 		float current_angle_;
 		bool has_new_angle_;
