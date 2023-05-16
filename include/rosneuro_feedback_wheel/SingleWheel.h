@@ -64,8 +64,8 @@ class SingleWheel {
 		neurodraw::Rectangle* 	minline_;
 		neurodraw::Rectangle* 	maxline_;
 
-		float input_min_;
-		float input_max_;
+		const float input_min_ = 0.0f;
+		const float input_max_ = 1.0f;
 		float angle_min_;
 		float angle_max_;
 		std::array<float, 2> thresholds_ = {0.7f, 0.3f};

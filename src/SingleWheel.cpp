@@ -27,8 +27,6 @@ bool SingleWheel::configure(void) {
 
 
 	// Getting parameters from nameserver
-	ros::param::param("~input_min", this->input_min_, 0.0f);
-	ros::param::param("~input_max", this->input_max_, 1.0f);
 	ros::param::param("~angle_min", this->angle_min_, 0.0f);
 	ros::param::param("~angle_max", this->angle_max_, 180.0f);
 
@@ -172,7 +170,7 @@ bool SingleWheel::set_threshold(float value, Direction dir) {
 			ROS_INFO("Threshold for Direction::Left changed to: %f", value);
 			break;
 		case Direction::Right:
-			this->thresholds_.at(1) = value;
+			this->thresholds_.at(1) = 1.0f - value;
 			ROS_INFO("Threshold for Direction::Right changed to: %f", value);
 			break;
 	}
