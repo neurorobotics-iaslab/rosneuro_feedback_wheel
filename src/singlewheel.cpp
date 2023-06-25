@@ -4,21 +4,22 @@
 
 int main(int argc, char** argv) {
 
-	// ros initialization
-	ros::init(argc, argv, "singlewheel");
+	//// ros initialization
+	//ros::init(argc, argv, "singlewheel");
 
-	rosneuro::SingleWheel wheel;
+	//ros::NodeHandle nh;
+	//rosneuro::feedback::SingleWheel wheel;
 
-	if(wheel.configure() == false) {
-		ROS_ERROR("SingleWheel configuration failed");
-		ros::shutdown();
-		return 0;
-	}
+	//if(wheel.configure() == false) {
+	//	ROS_ERROR("SingleWheel configuration failed");
+	//	ros::shutdown();
+	//	return 0;
+	//}
 
 
-	wheel.run();
+	//wheel.run();
 
-	ros::shutdown();
+	//ros::shutdown();
 
 	return 0;
 }

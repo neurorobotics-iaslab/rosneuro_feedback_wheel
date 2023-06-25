@@ -40,6 +40,9 @@ include_directories(include
 
 add_library(${PROJECT_NAME}	
 			src/SingleWheel.cpp
+			src/TrainingWheel.cpp
+			src/TrialSequence.cpp
+			src/Autopilot.cpp
 			)
 
 target_link_libraries(${PROJECT_NAME} 
@@ -56,6 +59,11 @@ add_dependencies(${PROJECT_NAME}
 #################
 add_executable(singlewheel src/singlewheel.cpp)
 target_link_libraries(singlewheel ${PROJECT_NAME}
+								 ${catkin_LIBRARIES}
+					  			 ${NEURODRAW_LIBRARIES}
+					  			 ${NEUROCHRONO_LIBRARIES})
+add_executable(trainingwheel src/trainingwheel.cpp)
+target_link_libraries(trainingwheel ${PROJECT_NAME}
 								 ${catkin_LIBRARIES}
 					  			 ${NEURODRAW_LIBRARIES}
 					  			 ${NEUROCHRONO_LIBRARIES})
