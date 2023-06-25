@@ -1,84 +1,75 @@
-#ifndef ROSNEURO_FEEDBACK_SINGLEWHEEL_H_
-#define ROSNEURO_FEEDBACK_SINGLEWHEEL_H_
+#ifndef ROSNEURO_FEEDBACK_CONTROLWHEEL_H_
+#define ROSNEURO_FEEDBACK_CONTROLWHEEL_H_
 
 #include <ros/ros.h>
-#include <std_srvs/Empty.h>
 
+#include <rosneuro_msgs/NeuroEvent.h>
 #include <rosneuro_msgs/NeuroOutput.h>
 
-#include <neurodraw/Engine.h>
-#include <neurodraw/Ring.h>
-#include <neurodraw/Arc.h>
-#include <neurodraw/Cross.h>
-#include <neurodraw/Rectangle.h>
-#include <neurodraw/Palette.h>
-#include <neurodraw/EventKey.h>
+#include "rosneuro_feedback_wheel/SingleWheel.h"
 
 namespace rosneuro {
+	namespace feedback {
 
+struct Events {
+	static const int Start 		= 1;
+	static const int Fixation 	= 786;
+	static const int CFeedback 	= 781;
+	static const int Hit 		= 897;
+	static const int Miss 		= 898;
+	static const int Off 		= 32768;
+};
 
+struct Duration {
+	int begin;
+	int start;
+	int fixation;
+	int cue;
+	int feedback_min;
+	int feedback_max;
+	int boom;
+	int timeout;
+	int timeout_on_rest;
+	int iti;
+	int end;
+};
 
-class SingleWheel {
+class ControlWheel : public SingleWheel {
 	
-	public:
-		enum class Direction {Left = 0, Right};
 
 	public:
-		SingleWheel(void);
-		~SingleWheel(void);
+		ControlWheel(void);
+		~ControlWheel(void);
 
 		bool configure(void);
-
 		void run(void);
-		void update(float angle);
-		void reset(void);
-
-		bool set_threshold(float value, Direction dir);
-		void show_thresholds(void);
 
 	protected:
-		void on_keyboard_event(const neurodraw::KeyboardEvent& event);
+		void setevent(int event);
+		void sleep(int msecs);
+		Direction class2direction(int eventcue);
+		Direction is_over_threshold(float input);
 		void on_received_data(const rosneuro_msgs::NeuroOutput& msg);
-		bool on_request_reset(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
-
-	protected:
-		void setup_scene(void);
-		float input2angle(float input);
 
 	private:
 		ros::NodeHandle nh_;
 		ros::NodeHandle p_nh_;
-		ros::Subscriber sanalog_;
-		ros::Subscriber sdiscrete_;
-		ros::Subscriber	sevent_;
-		ros::ServiceServer 	srv_reset_;
+		ros::Subscriber sub_;
+		ros::Publisher	pub_;
 
+		rosneuro_msgs::NeuroEvent  event_msg_;
+		rosneuro_msgs::NeuroOutput inputmsg_;
 
-		neurodraw::Engine* 		engine_;
-		neurodraw::Ring* 		ring_;
-		neurodraw::Arc* 		arc_;
-		neurodraw::Cross* 		cross_;
-		neurodraw::Rectangle* 	mline_;
-		neurodraw::Rectangle* 	lline_;
-		neurodraw::Rectangle* 	rline_;
-		neurodraw::Rectangle* 	minline_;
-		neurodraw::Rectangle* 	maxline_;
-
-		const float input_min_ = 0.0f;
-		const float input_max_ = 1.0f;
-		float angle_min_;
-		float angle_max_;
-		std::array<float, 2> thresholds_ = {0.7f, 0.3f};
-		bool is_threshold_enabled_ = false;
-
-		float current_angle_;
-		bool has_new_angle_;
-		bool user_quit_;
+		std::vector<int> classes_;
+		Duration duration_;
+		
+		float current_input_;
+		bool has_new_input_;
+		const float rate_ = 100.0f;
 
 };
 
-
-
+	}
 }
 
 #endif
