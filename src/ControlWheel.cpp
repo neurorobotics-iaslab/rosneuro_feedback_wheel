@@ -110,9 +110,44 @@ void ControlWheel::run(void) {
 }
 
 void ControlWheel::on_received_data(const rosneuro_msgs::NeuroOutput& msg) {
-	this->current_input_ = msg.softpredict.data.at(0);
-	this->current_angle_ = this->input2angle(msg.softpredict.data.at(0));
-	this->has_new_input_ = true;
+	int refclass = this->classes_.at(0);
+	int refclassIdx;
+	std::vector<int> msgclasses;
+	bool class_not_found = false;
+
+	// Created by L.Tonin  <luca.tonin@dei.unipd.it> on 29/06/23 10:52:18
+	// Due to the string message in neurooutput
+	for (auto it=msg.class_labels.begin(); it != msg.class_labels.end(); ++it)
+		msgclasses.push_back(std::stoi(*it));
+
+	// First: check that the incoming classes are the ones provided
+	for(auto it = msgclasses.begin(); it != msgclasses.end(); ++it) {
+		auto it2 = std::find(this->classes_.begin(), this->classes_.end(), *it);
+		if(it2 == this->classes_.end()) {
+			class_not_found = true;
+			break;
+		}
+	}
+
+	// Second: find the index of the refclass
+	if(class_not_found == true) {
+		this->has_new_input_ = false;
+		ROS_WARN_THROTTLE(5.0f, "The incoming neurooutput message does not have the provided classes");
+		return;
+	}
+
+	auto it = std::find(msgclasses.begin(), msgclasses.end(), refclass);
+
+	if(it != msgclasses.end()) {
+		refclassIdx = it - msgclasses.begin();
+
+		this->current_input_ = msg.softpredict.data.at(refclassIdx);
+		this->current_angle_ = this->input2angle(msg.softpredict.data.at(refclassIdx));
+		this->has_new_input_ = true;
+	} else {
+		this->has_new_input_ = true;
+		ROS_WARN_THROTTLE(5.0f, "Cannot find class %d in the incoming message", refclass);
+	}
 }
 
 
