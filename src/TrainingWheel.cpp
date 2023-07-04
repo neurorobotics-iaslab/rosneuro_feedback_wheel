@@ -127,13 +127,8 @@ void TrainingWheel::on_received_data(const rosneuro_msgs::NeuroOutput& msg) {
 
 	int refclass = this->classes_.at(0);
 	int refclassIdx;
-	std::vector<int> msgclasses;
 	bool class_not_found = false;
-
-	// Created by L.Tonin  <luca.tonin@dei.unipd.it> on 29/06/23 10:52:18
-	// Due to the string message in neurooutput
-	for (auto it=msg.class_labels.begin(); it != msg.class_labels.end(); ++it)
-		msgclasses.push_back(std::stoi(*it));
+	std::vector<int> msgclasses = msg.decoder.classes;
 
 	// First: check that the incoming classes are the ones provided
 	for(auto it = msgclasses.begin(); it != msgclasses.end(); ++it) {
