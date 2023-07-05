@@ -18,6 +18,7 @@ struct Events {
 	static const int Hit 		= 897;
 	static const int Miss 		= 898;
 	static const int Off 		= 32768;
+	static const int Command 	= 6000;
 };
 
 struct Duration {

@@ -91,11 +91,11 @@ void ControlWheel::run(void) {
 
 		// boom
 		boomevent = targethit == Direction::Left ? this->classes_.at(0) : this->classes_.at(1);
-		this->setevent(boomevent);
+		this->setevent(boomevent + Events::Command);
 		this->show_boom(targethit);
 		this->sleep(this->duration_.boom);
 		this->hide_boom();
-		this->setevent(boomevent + Events::Off);
+		this->setevent(boomevent + Events::Command + Events::Off);
 
 		// Inter trial interval
 		this->hide_cue();
