@@ -11,6 +11,11 @@ SingleWheel::SingleWheel(const std::string& wintitle) {
 	this->user_quit_ = false;
 
 	this->setup();
+
+	// Bind dynamic reconfigure callback
+	this->recfg_callback_type_ = boost::bind(&SingleWheel::on_request_reconfigure, this, _1, _2);
+	this->recfg_srv_.setCallback(this->recfg_callback_type_);
+	
 }
 
 SingleWheel::~SingleWheel(void) {
@@ -260,6 +265,18 @@ float SingleWheel::input2angle(float input) {
 
 	return angle;
 
+}
+
+
+void SingleWheel::on_request_reconfigure(rosneuro_config_wheel &config, uint32_t level) {
+
+	if( std::fabs(config.left_threshold - this->thresholds_.at(0)) > 0.00001) {
+		this->set_threshold(config.left_threshold, Direction::Left);
+	}
+	
+	if( std::fabs(config.right_threshold - this->thresholds_.at(1)) > 0.00001) {
+		this->set_threshold(config.right_threshold, Direction::Right);
+	}
 }
 
  }

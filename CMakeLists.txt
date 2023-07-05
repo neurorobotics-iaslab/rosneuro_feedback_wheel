@@ -7,6 +7,7 @@ SET(CMAKE_BUILD_TYPE RelWithDebInfo)
 find_package(catkin REQUIRED COMPONENTS 
 			 roscpp 
 			 std_msgs
+			 dynamic_reconfigure
 			 rosneuro_msgs
 			 )
 
@@ -15,6 +16,10 @@ find_path(NEURODRAW_INCLUDE_DIRS neurodraw/Shape.h REQUIRED)
 
 find_library(NEUROCHRONO_LIBRARIES neurochrono REQUIRED)
 find_path(NEUROCHRONO_INCLUDE_DIRS neurochrono/Timer.h REQUIRED)
+
+generate_dynamic_reconfigure_options(
+	cfg/Wheel.cfg
+)
 
 catkin_package(
   INCLUDE_DIRS 
@@ -53,6 +58,7 @@ target_link_libraries(${PROJECT_NAME}
 
 add_dependencies(${PROJECT_NAME} 
 				 ${catkin_EXPORTED_TARGETS}
+				 ${PROJECT_NAME}_gencfg
 )
 
 #################
