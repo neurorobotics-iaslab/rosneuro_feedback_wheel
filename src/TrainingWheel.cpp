@@ -68,7 +68,7 @@ bool TrainingWheel::configure(void) {
 	ros::param::param("~show_on_rest", this->show_on_rest_, true);
 
 	// Getting duration parameters
-	ros::param::param("~duration/begin", 		   this->duration_.begin, 		    2000);
+	ros::param::param("~duration/begin", 		   this->duration_.begin, 		    5000);
 	ros::param::param("~duration/start", 		   this->duration_.start, 		    1000);
 	ros::param::param("~duration/fixation", 	   this->duration_.fixation, 	    2000);
 	ros::param::param("~duration/cue", 			   this->duration_.cue, 		    1000);
@@ -202,6 +202,7 @@ void TrainingWheel::run(void) {
 		ROS_INFO("Trial %d/%d (class: %d | duration: %d ms)", trialnumber, this->trialsequence_.size(), trialclass, trialduration);
 		this->setevent(Events::Start);
 		this->sleep(this->duration_.start);
+		this->setevent(Events::Start + Events::Off);
 
 		if(ros::ok() == false || this->user_quit_ == true) break;
 		
@@ -271,7 +272,7 @@ void TrainingWheel::run(void) {
 		this->hide_boom();
 		this->setevent(boomevent + Events::Off);
 
-		this->setevent(Events::Start + Events::Off);
+		//this->setevent(Events::Start + Events::Off);
 
 		switch(boomevent) {
 			case Events::Hit:
