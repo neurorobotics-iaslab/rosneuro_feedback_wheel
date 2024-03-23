@@ -3,19 +3,15 @@
 namespace rosneuro {
 	namespace feedback {
 
-SingleWheel::SingleWheel(const std::string& wintitle) {
+SingleWheel::SingleWheel(const std::string& wintitle, int fps) {
 	
-	this->engine_ = new neurodraw::Engine(wintitle);
+	this->engine_ = new neurodraw::Engine(wintitle, fps);
 	this->engine_->on_keyboard(&SingleWheel::on_keyboard_event, this);
 
 	this->user_quit_ = false;
 
 	this->setup();
 
-	// Bind dynamic reconfigure callback
-	this->recfg_callback_type_ = boost::bind(&SingleWheel::on_request_reconfigure, this, _1, _2);
-	this->recfg_srv_.setCallback(this->recfg_callback_type_);
-	
 }
 
 SingleWheel::~SingleWheel(void) {
@@ -205,7 +201,7 @@ bool SingleWheel::set_threshold(float input, Direction dir) {
 	float threshold;
 
 	if(input > this->input_max_ | input < this->input_min_) {
-		ROS_ERROR("The provided threshold %f is not in the given input range [%f %f]",
+		ROS_ERROR("[SingleWheel] The provided threshold %f is not in the given input range [%f %f]",
 				   input, this->input_min_, this->input_max_);
 		return false;
 	}
@@ -218,19 +214,19 @@ bool SingleWheel::set_threshold(float input, Direction dir) {
 			threshold = input_c + dist_c;
 			this->thresholds_.at(0) = threshold;
 			this->lline_->rotate(this->input2angle(threshold), 0.0f, 0.0f);
-			ROS_INFO("Threshold for Direction::Left changed to: %f", threshold);
+			ROS_INFO("[SingleWheel] Threshold for Direction::Left changed to: %f", threshold);
 			break;
 		case Direction::Right:
 			threshold = input_c - dist_c;
 			this->thresholds_.at(1) = threshold;
 			this->rline_->rotate(this->input2angle(threshold), 0.0f, 0.0f);
-			ROS_INFO("Threshold for Direction::Right changed to: %f", threshold);
+			ROS_INFO("[SingleWheel] Threshold for Direction::Right changed to: %f", threshold);
 			break;
 		case Direction::Forward:
-			ROS_WARN("Threshold for Direction::Forward is not available");
+			ROS_WARN("[SingleWheel] Threshold for Direction::Forward is not available");
 			break;
 		default:
-			ROS_ERROR("The provided Direction is unknown. Threshold is not set");
+			ROS_ERROR("[SingleWheel] The provided Direction is unknown. Threshold is not set");
 			break;
 	}
 	
@@ -240,14 +236,14 @@ bool SingleWheel::set_threshold(float input, Direction dir) {
 bool SingleWheel::set_angle_range(float angle) {
 
 	if(angle > 360.0f | angle < 0.0f) {
-		ROS_ERROR("The provided angle %f is not in the allowed angle range [0.0 360.0]", angle);
+		ROS_ERROR("[SingleWheel] The provided angle %f is not in the allowed angle range [0.0 360.0]", angle);
 		return false;
 	}
 
 	this->angle_range_ = angle;
 	this->minline_->rotate(this->angle_range_/2.0f - 90.0f, 0.0f, 0.0f);
 	this->maxline_->rotate(this->angle_range_/2.0f + 90.0f, 0.0f, 0.0f);
-	ROS_INFO("Angle range changed to: %f", angle);
+	ROS_INFO("[SingleWheel] Angle range changed to: %f", angle);
 
 	return true;
 }
@@ -268,16 +264,6 @@ float SingleWheel::input2angle(float input) {
 }
 
 
-void SingleWheel::on_request_reconfigure(rosneuro_config_wheel &config, uint32_t level) {
-
-	if( std::fabs(config.left_threshold - this->thresholds_.at(0)) > 0.00001) {
-		this->set_threshold(config.left_threshold, Direction::Left);
-	}
-	
-	if( std::fabs(config.right_threshold - this->thresholds_.at(1)) > 0.00001) {
-		this->set_threshold(config.right_threshold, Direction::Right);
-	}
-}
 
  }
 

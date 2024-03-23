@@ -2,11 +2,13 @@
 #define ROSNEURO_FEEDBACK_CONTROLWHEEL_H_
 
 #include <ros/ros.h>
+#include <dynamic_reconfigure/server.h>
 
 #include <rosneuro_msgs/NeuroEvent.h>
 #include <rosneuro_msgs/NeuroOutput.h>
 
 #include "rosneuro_feedback_wheel/SingleWheel.h"
+#include "rosneuro_feedback_wheel/ControlWheelConfig.h"
 
 namespace rosneuro {
 	namespace feedback {
@@ -35,6 +37,9 @@ struct Duration {
 	int end;
 };
 
+using config_control_wheel = rosneuro_feedback_wheel::ControlWheelConfig;
+using dyncfg_control_wheel = dynamic_reconfigure::Server<config_control_wheel>;
+
 class ControlWheel : public SingleWheel {
 	
 
@@ -51,6 +56,7 @@ class ControlWheel : public SingleWheel {
 		Direction class2direction(int eventcue);
 		Direction is_over_threshold(float input);
 		void on_received_data(const rosneuro_msgs::NeuroOutput& msg);
+		void on_request_reconfigure(config_control_wheel &config, uint32_t level);
 
 	private:
 		ros::NodeHandle nh_;
@@ -67,6 +73,9 @@ class ControlWheel : public SingleWheel {
 		float current_input_;
 		bool has_new_input_;
 		const float rate_ = 100.0f;
+		
+		dyncfg_control_wheel recfg_srv_;
+  		dyncfg_control_wheel::CallbackType recfg_callback_type_;
 
 };
 

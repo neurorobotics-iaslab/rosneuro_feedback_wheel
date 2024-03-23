@@ -5,6 +5,7 @@
 #include <array>
 #include <random>
 #include <ros/ros.h>
+#include <dynamic_reconfigure/server.h>
 
 #include <rosneuro_msgs/NeuroEvent.h>
 #include <rosneuro_msgs/NeuroOutput.h>
@@ -14,6 +15,7 @@
 #include "rosneuro_feedback_wheel/TrialSequence.h"
 #include "rosneuro_feedback_wheel/Autopilot.h"
 
+#include "rosneuro_feedback_wheel/TrainingWheelConfig.h"
 
 namespace rosneuro {
 	namespace feedback {
@@ -41,6 +43,9 @@ struct Duration {
 	int end;
 };
 
+using config_training_wheel = rosneuro_feedback_wheel::TrainingWheelConfig;
+using dyncfg_training_wheel = dynamic_reconfigure::Server<config_training_wheel>;
+
 class TrainingWheel : public SingleWheel {
 
 	public:
@@ -59,6 +64,7 @@ class TrainingWheel : public SingleWheel {
 		Direction class2direction(int eventcue);
 		Direction is_target_hit(float input, Direction direction, int elapsed, int duration);
 		void on_received_data(const rosneuro_msgs::NeuroOutput& msg);
+		void on_request_reconfigure(config_training_wheel &config, uint32_t level);
 
 	private:
 		ros::NodeHandle nh_;
@@ -84,6 +90,9 @@ class TrainingWheel : public SingleWheel {
 		bool has_new_input_;
 		const float rate_ = 100.0f;
 		bool show_on_rest_;
+		
+		dyncfg_training_wheel recfg_srv_;
+  		dyncfg_training_wheel::CallbackType recfg_callback_type_;
 
 };
 

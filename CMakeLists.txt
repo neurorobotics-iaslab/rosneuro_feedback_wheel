@@ -18,7 +18,8 @@ find_library(NEUROCHRONO_LIBRARIES neurochrono REQUIRED)
 find_path(NEUROCHRONO_INCLUDE_DIRS neurochrono/Timer.h REQUIRED)
 
 generate_dynamic_reconfigure_options(
-	cfg/Wheel.cfg
+	cfg/TrainingWheel.cfg
+	cfg/ControlWheel.cfg
 )
 
 catkin_package(

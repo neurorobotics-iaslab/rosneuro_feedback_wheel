@@ -8,6 +8,9 @@ ControlWheel::ControlWheel(void) : SingleWheel("controlwheel"), p_nh_("~") {
 	this->pub_ = this->nh_.advertise<rosneuro_msgs::NeuroEvent>("/events/bus", 1);
 	this->sub_ = this->nh_.subscribe("/integrator/neuroprediction", 1, &ControlWheel::on_received_data, this);
 
+	// Bind dynamic reconfigure callback
+	this->recfg_callback_type_ = boost::bind(&ControlWheel::on_request_reconfigure, this, _1, _2);
+	this->recfg_srv_.setCallback(this->recfg_callback_type_);
 }
 
 ControlWheel::~ControlWheel(void) {}
@@ -167,6 +170,17 @@ ControlWheel::Direction ControlWheel::is_over_threshold(float input) {
 	}
 
 	return direction;
+}
+
+void ControlWheel::on_request_reconfigure(config_control_wheel &config, uint32_t level) {
+
+	if( std::fabs(config.left_threshold - this->thresholds_.at(0)) > 0.00001) {
+		this->set_threshold(config.left_threshold, Direction::Left);
+	}
+	
+	if( std::fabs(config.right_threshold - this->thresholds_.at(1)) > 0.00001) {
+		this->set_threshold(config.right_threshold, Direction::Right);
+	}
 }
 
 	}

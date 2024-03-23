@@ -3,10 +3,6 @@
 
 #include <ros/ros.h>
 
-#include <dynamic_reconfigure/server.h>
-
-#include "rosneuro_feedback_wheel/WheelConfig.h"
-
 #include <neurodraw/Engine.h>
 #include <neurodraw/Ring.h>
 #include <neurodraw/Arc.h>
@@ -27,17 +23,13 @@ const std::array<neurodraw::Color, 4> CuePalette {
 		neurodraw::Palette::darkgray
 };
 
-using rosneuro_config_wheel = rosneuro_feedback_wheel::WheelConfig;
-using dyncfg_wheel          = dynamic_reconfigure::Server<rosneuro_config_wheel>;
-
-
 class SingleWheel {
 	
 	public:
 		enum class Direction {Left = 0, Right, Forward, Timeout, None};
 
 	public:
-		SingleWheel(const std::string& wintitle = "neurowheel");
+		SingleWheel(const std::string& wintitle = "neurowheel", int fps = 24);
 		virtual ~SingleWheel(void);
 
 		void setup(void);
@@ -61,7 +53,6 @@ class SingleWheel {
 	protected:
 		virtual void on_keyboard_event(const neurodraw::KeyboardEvent& event);
 		float input2angle(float input);
-		void on_request_reconfigure(rosneuro_config_wheel &config, uint32_t level);
 		
 
 	protected:
@@ -87,8 +78,6 @@ class SingleWheel {
 		float current_angle_;
 		bool user_quit_;
 
-		dyncfg_wheel recfg_srv_;
-  		dyncfg_wheel::CallbackType recfg_callback_type_;
 		
 
 };
