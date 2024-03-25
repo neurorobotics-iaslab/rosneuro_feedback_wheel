@@ -8,6 +8,7 @@ SingleWheel::SingleWheel(const std::string& wintitle, int fps) {
 	this->engine_ = new neurodraw::Engine(wintitle, fps);
 	this->engine_->on_keyboard(&SingleWheel::on_keyboard_event, this);
 
+	this->name_      = wintitle;
 	this->user_quit_ = false;
 
 	this->setup();
@@ -74,6 +75,10 @@ void SingleWheel::move(float angle) {
 
 void SingleWheel::reset(void) {
 	this->move(90.0f);
+}
+
+std::string SingleWheel::name(void) const {
+	return this->name_;
 }
 
 void SingleWheel::show_fixation(void) {

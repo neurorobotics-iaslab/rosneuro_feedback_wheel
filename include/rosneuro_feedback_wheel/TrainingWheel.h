@@ -67,10 +67,11 @@ class TrainingWheel : public SingleWheel {
 		void on_request_reconfigure(config_training_wheel &config, uint32_t level);
 
 	private:
-		ros::NodeHandle nh_;
-		ros::NodeHandle p_nh_;
-		ros::Subscriber sub_;
-		ros::Publisher pub_;
+		ros::NodeHandle    nh_;
+		ros::NodeHandle    p_nh_;
+		ros::Subscriber    sub_;
+		ros::Publisher 	   pub_;
+		ros::ServiceClient srv_reset_;
 
 		rosneuro_msgs::NeuroEvent  event_msg_;
 		rosneuro_msgs::NeuroOutput inputmsg_;

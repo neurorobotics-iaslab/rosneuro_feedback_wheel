@@ -37,6 +37,7 @@ class SingleWheel {
 		void reset(void);
 		bool set_threshold(float input, Direction dir);
 		bool set_angle_range(float angle);
+		std::string name(void) const;
 
 		void show_fixation(void);
 		void show_cue(Direction dir);
@@ -77,6 +78,8 @@ class SingleWheel {
 
 		float current_angle_;
 		bool user_quit_;
+
+		std::string name_;
 
 		
 
