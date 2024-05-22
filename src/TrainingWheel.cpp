@@ -7,7 +7,7 @@ TrainingWheel::TrainingWheel(void) : SingleWheel("trainingwheel"), p_nh_("~") {
 
 
 	this->pub_ = this->nh_.advertise<rosneuro_msgs::NeuroEvent>("/events/bus", 1);
-	this->sub_ = this->nh_.subscribe("/integrator/neuroprediction", 1, &TrainingWheel::on_received_data, this);
+	this->sub_ = this->nh_.subscribe("/smr/neuroprediction/integrated", 1, &TrainingWheel::on_received_data, this);
 
 	// Bind dynamic reconfigure callback
 	this->recfg_callback_type_ = boost::bind(&TrainingWheel::on_request_reconfigure, this, _1, _2);
