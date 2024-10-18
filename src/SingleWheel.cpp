@@ -27,7 +27,7 @@ void SingleWheel::setup(void) {
 	this->cross_   = new neurodraw::Cross(0.3f, 0.05f);
 	this->ring_    = new neurodraw::Ring(0.8f, 0.15f, neurodraw::Palette::grey);
 	this->arc_     = new neurodraw::Arc(0.8f, 0.15f, 2.0 * M_PI / 3.0f, neurodraw::Palette::lightgrey);
-	this->mline_   = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::darkgreen);
+	this->mline_   = new neurodraw::Rectangle(0.02f, 0.15f, true, neurodraw::Palette::darkgreen);
 	this->rline_   = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::firebrick);
 	this->lline_   = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::royalblue);
 	this->minline_ = new neurodraw::Rectangle(0.01f, 0.15f, true, neurodraw::Palette::dimgray);
